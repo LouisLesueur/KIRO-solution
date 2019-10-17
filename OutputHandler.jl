@@ -16,7 +16,10 @@ function create_output_file(filename, list_ss_trt, global_list_turns, list_group
         write(file, first_line)
 
         # Second line
-        nb_turn = length(global_list_turns)
+        nb_turn = 0
+        for trn in global_list_turns
+            nb_turn += length(trn[3])
+        end
         second_line = string("y ", nb_turn, "\n")
         write(file, second_line)
 
@@ -37,8 +40,6 @@ function create_output_file(filename, list_ss_trt, global_list_turns, list_group
         # Turns lines
         count = 0
         for turns_data in global_list_turns
-            println("----------")
-            println(turns_data)
             week = turns_data[1]
             group_id = turns_data[2]
             list_turns = turns_data[3]
@@ -46,7 +47,7 @@ function create_output_file(filename, list_ss_trt, global_list_turns, list_group
             for turn in list_turns
                 println(turn)
                 nb_furn = length(turn)
-                crnt_turn_line = string("P ", count, " g ", group_id, " s ", week, " n " , nb_furn)
+                crnt_turn_line = string("P ", count, " g ", group_id-1, " s ", week, " n " , nb_furn)
                 for furn in turn
                     f_idx, f_quant = furn
                     crnt_turn_line = string(crnt_turn_line, " f ", f_idx-1, " ", f_quant)
