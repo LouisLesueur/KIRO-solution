@@ -47,7 +47,7 @@ function create_output_file(filename, list_ss_trt, global_list_turns, list_group
             for turn in list_turns
                 println(turn)
                 nb_furn = length(turn)
-                crnt_turn_line = string("P ", count, " g ", group_id-1, " s ", week, " n " , nb_furn)
+                crnt_turn_line = string("P ", count, " g ", group_id-1, " s ", week-1, " n " , nb_furn)
                 for furn in turn
                     f_idx, f_quant = furn
                     crnt_turn_line = string(crnt_turn_line, " f ", f_idx-1, " ", f_quant)

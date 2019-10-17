@@ -30,6 +30,10 @@ function tournees(G, s, M, C, Q_max)
         quantite_rest = Q_max
         T = []
         while quantite_rest > 0 && num_f<=length(G)
+            if quantite[num_f] == 0
+                num_f += 1
+                continue
+            end
             if isless(quantite[num_f],quantite_rest)
                 push!(T, (G[num_f], quantite[num_f]))
                 quantite_rest -= quantite[num_f]
@@ -55,13 +59,12 @@ end
 
 function Tournees_gen(list_G, M, C, Q_max, H, d_costs, u_costs)
     l_tournees = []
-    for G in list_G
+    for (i,G) in enumerate(list_G)
         G = chemin_opti(G, d_costs, u_costs, C)
         for s in 1:H
             tourn = tournees(G, s, M, C, Q_max)
             if tourn != [[]]
-                push!(l_tournees, [s, G, tourn])
-                print(tourn, "\n")
+                push!(l_tournees, [s, i, tourn])
             end
         end
     end
