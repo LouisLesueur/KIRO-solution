@@ -22,7 +22,7 @@ function min_dist_ind(el,Z,a_traiter)
     min_dist = calc_dist(el, Z[premier_indice])
     for j in (premier_indice+1):length(Z)
         if a_traiter[j]
-            dist = calc_dist(Z[i], Z[j])
+            dist = calc_dist(el, Z[j])
             if dist<min_dist
                 min_dist = dist
                 min_j = j
@@ -42,8 +42,9 @@ function clustering(Z, D_coord)
     while sum(a_traiter) >= 4
         premier_f = min_dist_ind(D_coord, Z, a_traiter)
         G = [premier_f]
+        a_traiter[premier_f] = false
         for k in 1:3
-            f_min = min_dist_ind(Z[G[k+1]],Z, a_traiter)
+            f_min = min_dist_ind(Z[G[k]],Z, a_traiter)
             a_traiter[f_min] = false
             push!(G, f_min)
         end
