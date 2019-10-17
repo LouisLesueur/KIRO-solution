@@ -55,4 +55,4 @@ function read_to_list(filename)
     return Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt
 end
 
-Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt = read_to_list("divers/Instance-propre.in")
+#Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt = read_to_list("divers/Instance-propre.in")
