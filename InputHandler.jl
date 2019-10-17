@@ -40,7 +40,7 @@ function read_to_list(filename)
                 for sem in 1:H
                     M[length(f_ids)][sem] = parse(Float64, line[5 + sem])
                 end
-                push!(f_coords, parse(Float64, line[7 + H]))
+                push!(f_coords, (parse(Float64, line[7 + H]), parse(Float64, line[8 + H])))
             elseif line[1] == "a"
                 a_dep = Int(parse(Float64, line[2])) + 1
                 a_arr = Int(parse(Float64, line[3])) + 1
@@ -55,4 +55,4 @@ function read_to_list(filename)
     return Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt
 end
 
-# Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt = read_to_list("divers/Instance-propre.in")
+Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt = read_to_list("divers/Instance-propre.in")
