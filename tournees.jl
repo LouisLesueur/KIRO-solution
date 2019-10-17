@@ -32,8 +32,8 @@ end
 
 function Tournees_gen(list_G, M, C, Q_max, H)
     l_tournees = []
-    for s in 1:H
-        for G in list_G
+    for G in list_G
+        for s in 1:H
             push!(l_tournees, [s, G, tournees(G, s, M, C, Q_max)])
         end
     end
