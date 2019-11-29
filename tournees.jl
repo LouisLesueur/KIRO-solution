@@ -70,3 +70,51 @@ function Tournees_gen(list_G, M, C, Q_max, H, d_costs, u_costs)
     end
     return l_tournees
 end
+
+function find_tournees_groupe(numero_G,l_tournees)
+    res = []
+    for tournee in l_tournees
+        if tournee[2] == numero_G
+            push!(res,tournee)
+        end
+    end
+    return res
+end
+
+function rejet_tournees(l_tournees, choix_list_G, M, C, Q_max, H, d_costs, u_costs, s_trt)
+    l_tournees_2 = []
+    choix_list_G_2 = []
+    l_rejet = []
+
+    i_actu = 1
+    # pour mettre le bon numéro de groupe
+
+    for (i,G) in enumerate(choix_list_G)
+
+        l_tournees_G = find_tournees_groupe(i,l_tournees)
+
+        c = 0
+        for tournee in l_tournees_G
+            c += calc_cout_chemin(G,d_costs,u_costs,C)
+        end
+
+        # bon indice pour s_trt ?
+        c_str = 0
+        for k in G
+            c_str += s_trt[k]
+        end
+
+        if c > c_str
+            for k in G
+                push!(l_rejet,k)
+            end
+        else
+            push!(choix_list_G_2,G)
+            for tournee in l_tournees_G
+                push!(l_tournees_2,[ tournee[1], i_actu, tournee[3] ])
+            end
+            i_actu += 1
+        end
+    end
+    return l_tournees_2, choix_list_G_2, l_rejet
+end
