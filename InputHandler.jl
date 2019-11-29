@@ -20,7 +20,7 @@ function read_to_list(filename)
                 F = Int(parse(Float64, first_line[4])) + 2
                 H = Int(parse(Float64, first_line[6]))
                 C = [[0.0 for j in 1:F] for i in 1:F]
-                M = [[0.0 for j in 1:H] for i in 1:F]
+                M = [[0 for j in 1:H] for i in 1:F]
             end
             iter += 1
         end
@@ -38,7 +38,7 @@ function read_to_list(filename)
                 push!(f_ids, Int(parse(Float64, line[2])))
                 push!(s_trt, parse(Float64, line[4]))
                 for sem in 1:H
-                    M[length(f_ids)][sem] = parse(Float64, line[5 + sem])
+                    M[length(f_ids)][sem] = parse(Int64, line[5 + sem])
                 end
                 push!(f_coords, (parse(Float64, line[7 + H]), parse(Float64, line[8 + H])))
             elseif line[1] == "a"

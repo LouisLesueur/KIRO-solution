@@ -1,8 +1,10 @@
+rejet = 100
+
 function sous_traitement(Z)
   l_st = []
   Z_C = []
   for i in 1:length(Z)
-    if Z[i][3] < 10
+    if Z[i][3] < rejet
         push!(l_st, i)
     else
         push!(Z_C, (i, Z[i]))
