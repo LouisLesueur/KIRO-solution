@@ -118,3 +118,7 @@ function rejet_tournees(l_tournees, choix_list_G, M, C, Q_max, H, d_costs, u_cos
     end
     return l_tournees_2, choix_list_G_2, l_rejet
 end
+
+function reduit_tournees(l_tournees, choix_list_G, M, C, Q_max, H, d_costs, u_costs, s_trt)
+    # idee : on fait la meme chose qu'au dessus, mais en essayant d'enlever les fournisseurs 1 par 1 du cluster
+end

@@ -1,4 +1,5 @@
-rejet = 100
+rejet = 500
+#ça a l'air d'etre la meilleur valeur après quelques tests
 
 function sous_traitement(Z)
   l_st = []
