@@ -35,7 +35,6 @@ function tournees(G, s, M, C, Q_max)
     # output : liste de tournées (liste de liste de tuple (f, q_f))
 
     # A VOIR POUR PRENDRE MOINS DE CAMION POSSIBLE (PASSER LE MOINS SOUVENT POUR UN MEME FOURNISSEUR)
-    end
     quantite = [M[G[i]][s] for i in 1:length(G)]
     Tournees = []
     while sum(quantite) > Q_max
