@@ -1,0 +1,7 @@
+Soit on fait le truc actuel
+
+soit on regarde d'abord les tournées : but : passer le moins de camion dans une semaine pour un fournisseur
+puis : on prend les chemins opti qui correspondent (pour chaque tournée)
+
+
+

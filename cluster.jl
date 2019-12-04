@@ -1,7 +1,12 @@
-rejet = 500
-#ça a l'air d'etre la meilleur valeur après quelques tests
+rejet = 500 # si coût sous traitance inférieurs : on sous traite
+# ça a l'air d'etre la meilleur valeur après quelques tests
+# à voir si on s'amuse à le faire en détail
 
 function sous_traitement(Z)
+  # fonction qui permet de choisir quel fournisseur sous traiter ou non (dépend de la valeur de rejet)
+  # input : Z (coordonnées et coût sous traitance des fournisseurs)
+  # output : l_st : liste des fournisseurs à sous traiter
+  #          Z_C : liste des fournisseurs à traiter
   l_st = []
   Z_C = []
   for i in 1:length(Z)
@@ -15,11 +20,16 @@ function sous_traitement(Z)
 end
 
 function calc_dist(x,y)
+    # fonction qui calcule la distance entre deux points
+    # input : points x et y (tuple de coordonnées)
+    # output : distance
     return (x[1]-y[1])^2+(x[2]-y[2])^2
 end
 
 function min_dist_ind(el,Z,a_traiter)
-    # el : Tuple[float,float]
+    # fonction qui trouve le fournisseur le plus proche du fournisseur donnés
+    # input : el (fournisseur), Z (liste fournissseur), a_traiter (liste qui reste à regarder)
+    # output : indice du fournisseur le plus proche
     premier_indice = findfirst(isequal(true), a_traiter)
     min_j = premier_indice
     min_dist = calc_dist(el, Z[premier_indice])
@@ -36,24 +46,29 @@ function min_dist_ind(el,Z,a_traiter)
 end
 
 function clustering(Z, D_coord)
-    l_st, Z_C = sous_traitement(Z)
+    # fonction qui établit les clusters initiaux
+    # input : Z (liste des fournisseurs), D_coord (coord du dépôt)
+    # output : list_G (liste des clusters), l_st (liste des sous traités)
+    l_st, Z_C = sous_traitement(Z) # on regarde lesquels sous traiter
     a_traiter = [true for i in 1:length(Z)]
     list_G = []
-    for i in l_st
+    for i in l_st # pas besoin de mettre dans cluster si st
         a_traiter[i] = false
     end
-    while sum(a_traiter) >= 4
-        premier_f = min_dist_ind(D_coord, Z, a_traiter)
-        G = [premier_f]
+    while sum(a_traiter) >= 4 # on fait des groupes de 4
+        # ESSAYER AVEC D'AUTRES HYPOTHESES (3 PUIS ON RAJOUTE)
+        premier_f = min_dist_ind(D_coord, Z, a_traiter) # le plus proche du dépôt
+        G = [premier_f] # initialisation tournée
         a_traiter[premier_f] = false
-        for k in 1:3
+        for k in 1:3 # on rajoute les trois plus proches
             f_min = min_dist_ind(Z[G[k]],Z, a_traiter)
             a_traiter[f_min] = false
             push!(G, f_min)
         end
         push!(list_G, G)
     end
-    while sum(a_traiter) > 0
+    while sum(a_traiter) > 0 # si c'est pas un multiple de 4, on sous traite les restants
+        # ESSAYER AUTREMENT
         f_st = findfirst(isequal(true), a_traiter)
         push!(l_st, f_st)
         a_traiter[f_st] = false

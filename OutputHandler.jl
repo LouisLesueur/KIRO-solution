@@ -1,3 +1,4 @@
+#parser output
 function list_to_string(list)
     sol_string = ""
     for elem in list
