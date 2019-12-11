@@ -28,6 +28,12 @@ plot([f_coords[i][1] for i in 1:F],[f_coords[i][2] for i in 1:F],seriestype=:sca
 
 list_coord_st_x = [f_coords[i][1] for i in choix_l_st]
 list_coord_st_y = [f_coords[i][2] for i in choix_l_st]
-
 plot!(list_coord_st_x,list_coord_st_y,seriestype=:scatter)
+
+for G in choix_list_G_2
+	list_coord_G_x = [f_coords[i][1] for i in G]
+	list_coord_G_y = [f_coords[i][2] for i in G]
+	plot!(list_coord_G_x,list_coord_G_y,seriestype=:scatter,label="")
+end
+
 plot!([f_coords[i][1] for i in F:F],[f_coords[i][2] for i in F:F],seriestype=:scatter)
