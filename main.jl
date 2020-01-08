@@ -8,6 +8,7 @@ Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt = read_to_list("divers/Instance
 
 Z = [(f_coords[i][1],f_coords[i][2],s_trt[i]) for i in 1:(F-2)]
 choix = clustering(Z, d_coord)
+#choix = clustering_kmeans(Z, d_coord)
 choix_list_G = choix[1]
 choix_l_st = choix[2]
 

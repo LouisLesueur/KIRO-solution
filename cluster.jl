@@ -1,3 +1,6 @@
+using Clustering
+
+
 rejet = 500 # si coût sous traitance inférieurs : on sous traite
 # ça a l'air d'etre la meilleur valeur après quelques tests
 # à voir si on s'amuse à le faire en détail
@@ -74,4 +77,29 @@ function clustering(Z, D_coord)
         a_traiter[f_st] = false
     end
     return (list_G, l_st)
+end
+
+function clustering_kmeans(Z, D_coord)
+    nb_clusters = 100
+    print("bah")
+    Z_sans_st = [ [ elt[1], elt[2] ] for elt in Z]
+    Z_sans_st = hcat(Z_sans_st...)
+    #print(Z_sans_st)
+    print("bih")
+    R = kmeans(Matrix(Z_sans_st), nb_clusters)
+    A = assignments(R)
+    print("boh")
+    list_G = [ [] for i in 1:nb_clusters ]
+    for i in 1:length(A)
+        push!(list_G[A[i]],i)
+    end
+    print("bouh")
+    list_G_2 = []
+    for elt in list_G
+        if (length(elt) > 0)
+            push!(list_G_2,elt)
+        end
+    end
+    return(list_G,[])
+    print("bonjour")
 end
