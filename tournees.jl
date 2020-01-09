@@ -134,6 +134,75 @@ function rejet_tournees(l_tournees, choix_list_G, M, C, Q_max, H, d_costs, u_cos
     return l_tournees_2, choix_list_G_2, l_rejet
 end
 
-function reduit_tournees(l_tournees, choix_list_G, M, C, Q_max, H, d_costs, u_costs, s_trt)
-    # idee : on fait la meme chose qu'au dessus, mais en essayant d'enlever les fournisseurs 1 par 1 du cluster
+
+
+#############
+function remplissage(g, ordre, new_M, Q)
+	k = 1
+	i = ordre[k]
+	charge = new_M[i]
+	T = [[g[i]]]
+	while k < length(g)
+		k += 1
+		i = ordre[k]
+		if charge + new_M[i] <= Q
+			charge += new_M[i]
+		else
+			push!(T, [])
+		end
+		push!(T[length(T)], g[i])
+	end
+	return T
+end
+
+function calc_cout_tournees(T, d_costs, u_costs, C)
+    cout = 0
+    for t in T
+        cout += calc_cout_chemin(t, d_costs, u_costs, C)
+    end
+    return cout
+end
+
+function tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
+    l_T = []
+    # d’abord on fait des tournées pour les supérieurs à 13 :
+    new_M = []
+    for i in g
+        m = M[i][s]
+        while isless(Q, m)
+           push!(l_T, [i])
+           m -= Q
+       end
+       push!(new_M, m)
+   end
+   # ensuite on regroupe de la façon la plus opti = le moins de camion possible, parcourant la plus petite distance possible (QUESTION : selon le remplissage du coup pas sûr que le calcul préalable de l’ordre opti soit intéressant à effectuer)
+   # les groupes étant de 4 on peut faire une fonction qui fait le remplissage « correct » prenant en argument l’ordre de passage :
+   ordre = collect(permutations(1:length(g)))
+   T_min = remplissage(g, ordre[1], new_M, Q)
+   cout_min = calc_cout_tournees(T_min, d_costs, u_costs, C)
+   i_min = 1
+   for (i, ord) in enumerate(ordre)
+       T = remplissage(g, ord, new_M, Q)
+       cout = calc_cout_tournees(T, d_costs, u_costs, C)
+       if isless(cout, cout_min)
+           cout_min = cout
+           i_min = i
+           T_min = T
+       end
+   end
+   return T_min
+end
+
+function tournee_opti(G, M, C, Q_max, H, d_costs, u_costs)
+    # fonction qui calcule les tournées pour tout fournisseur pour toute semaine
+    l_tournees = []
+    for (i,g) in enumerate(G)
+        for s in 1:H
+            tourn = tournee_opti_g(g, d_costs, u_costs, M, C, Q)
+            if tourn != [[]]
+                push!(l_tournees, [s, i, tourn])
+            end
+        end
+    end
+    return l_tournees
 end

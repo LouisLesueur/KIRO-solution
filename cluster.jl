@@ -79,27 +79,60 @@ function clustering(Z, D_coord)
     return (list_G, l_st)
 end
 
-function clustering_kmeans(Z, D_coord)
+function clustering_kmeans(Z)
     nb_clusters = 100
-    print("bah")
     Z_sans_st = [ [ elt[1], elt[2] ] for elt in Z]
     Z_sans_st = hcat(Z_sans_st...)
     #print(Z_sans_st)
-    print("bih")
     R = kmeans(Matrix(Z_sans_st), nb_clusters)
     A = assignments(R)
-    print("boh")
     list_G = [ [] for i in 1:nb_clusters ]
     for i in 1:length(A)
         push!(list_G[A[i]],i)
     end
-    print("bouh")
     list_G_2 = []
     for elt in list_G
         if (length(elt) > 0)
             push!(list_G_2,elt)
         end
     end
-    return(list_G,[])
-    print("bonjour")
+    return(list_G_2,[])
+end
+
+
+
+##################
+function premier_soustraitement(Z, d_costs, u_costs, M, Q_max)
+    # Z[i][3] = cout sous traite
+    # charge semaine : M[i][s]
+    # cout aller retour : d_costs, u_costs
+    l_st = []
+    Z_C = []
+    for i in 1:length(Z)
+      if Z[i][3] < (d_costs[i]+u_costs[i])/Q_max*(sum([M[i][s] for s in 1:H]))
+          push!(l_st, i)
+      else
+          push!(Z_C, Z[i])
+      end
+    end
+    return (l_st, Z_C)
+end
+
+
+function split_cluster(G)
+    G2 = []
+    for g in G
+        if length(g) > 4
+            push!(G2, g[:4])
+            if length(g)-4 > 4
+                push!(G2, g[5:8])
+                push!(G2, g[9:length(g)])
+            else
+                push!(G2, g[5:length(g)])
+            end
+        else
+            push!(G2, g)
+        end
+    end
+    return G2
 end
