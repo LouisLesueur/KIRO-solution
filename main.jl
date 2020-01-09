@@ -27,6 +27,7 @@ print("split cluster ok")
 # on définit les tournées opti pour les groupes ainsi constitués
 # on vérifie s'il n'y a rien de plus intéressant à sous traiter (ptêt d'abord faire un premier tri pour réduire temps de calcul : on sous traite si cout_st < sum(charge_sem/13 * cout_ar))
 list_tournees = tournee_opti(choix_list_G, M, C, Q, H, d_costs, u_costs)
+print(list_tournees[1])
 print("liste tournees ok")
 
 

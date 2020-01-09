@@ -141,7 +141,7 @@ function remplissage(g, ordre, new_M, Q)
 	k = 1
 	i = ordre[k]
 	charge = new_M[i]
-	T = [[g[i]]]
+	T = [[(g[i], new_M[i])]]
 	while k < length(g)
 		k += 1
 		i = ordre[k]
@@ -150,7 +150,7 @@ function remplissage(g, ordre, new_M, Q)
 		else
 			push!(T, [])
 		end
-		push!(T[length(T)], g[i])
+		push!(T[length(T)], (g[i], new_M[i]))
 	end
 	return T
 end
@@ -158,7 +158,10 @@ end
 function calc_cout_tournees(T, d_costs, u_costs, C)
     cout = 0
     for t in T
-        cout += calc_cout_chemin(t, d_costs, u_costs, C)
+        print(t)
+        chem = [t[i][1] for i in 1:length(t)]
+        print(chem)
+        cout += calc_cout_chemin(chem, d_costs, u_costs, C)
     end
     return cout
 end
