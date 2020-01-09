@@ -90,13 +90,13 @@ function clustering_kmeans(Z)
     for i in 1:length(A)
         push!(list_G[A[i]],i)
     end
-    list_G_2 = []
+    """list_G_2 = []
     for elt in list_G
         if (length(elt) > 0)
             push!(list_G_2,elt)
         end
-    end
-    return(list_G_2,[])
+    end"""
+    return(list_G,[])
 end
 
 
@@ -123,7 +123,7 @@ function split_cluster(G)
     G2 = []
     for g in G
         if length(g) > 4
-            push!(G2, g[:4])
+            push!(G2, g[1:4])
             if length(g)-4 > 4
                 push!(G2, g[5:8])
                 push!(G2, g[9:length(g)])

@@ -5,7 +5,7 @@ include("OutputHandler.jl")
 using Combinatorics
 
 Q, F, H, C, M, d_costs, u_costs, f_coords, s_trt = read_to_list("divers/Instance-propre.csv")
-
+Qmax = 13000
 Z = [(f_coords[i][1],f_coords[i][2],s_trt[i]) for i in 1:(F-2)]
 """
 # SANS K_MEANS
@@ -26,10 +26,9 @@ choix_list_G = split_cluster(choix)
 print("split cluster ok")
 # on définit les tournées opti pour les groupes ainsi constitués
 # on vérifie s'il n'y a rien de plus intéressant à sous traiter (ptêt d'abord faire un premier tri pour réduire temps de calcul : on sous traite si cout_st < sum(charge_sem/13 * cout_ar))
-list_tournees = tournee_opti(choix_list_G, d_costs, u_costs, M, C, Q)
+list_tournees = tournee_opti(choix_list_G, M, C, Q, H, d_costs, u_costs)
 print("liste tournees ok")
 
-print(choix)
 
 create_output_file("solution_try.txt", choix_l_st, list_tournees, choix_list_G)
 

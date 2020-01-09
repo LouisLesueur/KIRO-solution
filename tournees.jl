@@ -198,7 +198,7 @@ function tournee_opti(G, M, C, Q_max, H, d_costs, u_costs)
     l_tournees = []
     for (i,g) in enumerate(G)
         for s in 1:H
-            tourn = tournee_opti_g(g, d_costs, u_costs, M, C, Q)
+            tourn = tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
             if tourn != [[]]
                 push!(l_tournees, [s, i, tourn])
             end
