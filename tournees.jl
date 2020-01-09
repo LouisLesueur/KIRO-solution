@@ -158,9 +158,7 @@ end
 function calc_cout_tournees(T, d_costs, u_costs, C)
     cout = 0
     for t in T
-        print(t)
         chem = [t[i][1] for i in 1:length(t)]
-        print(chem)
         cout += calc_cout_chemin(chem, d_costs, u_costs, C)
     end
     return cout
@@ -173,7 +171,7 @@ function tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
     for i in g
         m = M[i][s]
         while isless(Q, m)
-           push!(l_T, [i])
+           push!(l_T, [(i, Q)])
            m -= Q
        end
        push!(new_M, m)
@@ -193,7 +191,8 @@ function tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
            T_min = T
        end
    end
-   return T_min
+   l_T = vcat(l_T, T_min)
+   return l_T
 end
 
 function tournee_opti(G, M, C, Q_max, H, d_costs, u_costs)

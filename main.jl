@@ -27,7 +27,6 @@ print("split cluster ok")
 # on définit les tournées opti pour les groupes ainsi constitués
 # on vérifie s'il n'y a rien de plus intéressant à sous traiter (ptêt d'abord faire un premier tri pour réduire temps de calcul : on sous traite si cout_st < sum(charge_sem/13 * cout_ar))
 list_tournees = tournee_opti(choix_list_G, M, C, Q, H, d_costs, u_costs)
-print(list_tournees[1])
 print("liste tournees ok")
 
 
@@ -40,6 +39,7 @@ for k in l_rejet_enplus
     push!(choix_l_st,k)
 end
 
+print(choix_l_st)
 create_output_file("solution2_try.txt", choix_l_st, list_tournees_2, choix_list_G_2)
 
 #[1,5,7], # choix_l_st
