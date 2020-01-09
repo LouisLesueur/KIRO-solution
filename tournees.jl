@@ -141,7 +141,11 @@ function remplissage(g, ordre, new_M, Q)
 	k = 1
 	i = ordre[k]
 	charge = new_M[i]
-	T = [[(g[i], new_M[i])]]
+    if new_M[i] != 0
+        T = [[(g[i], new_M[i])]]
+    else
+        T = [[]]
+    end
 	while k < length(g)
 		k += 1
 		i = ordre[k]
@@ -150,7 +154,9 @@ function remplissage(g, ordre, new_M, Q)
 		else
 			push!(T, [])
 		end
-		push!(T[length(T)], (g[i], new_M[i]))
+        if new_M[i] != 0
+            push!(T[length(T)], (g[i], new_M[i]))
+        end
 	end
 	return T
 end
@@ -158,8 +164,10 @@ end
 function calc_cout_tournees(T, d_costs, u_costs, C)
     cout = 0
     for t in T
-        chem = [t[i][1] for i in 1:length(t)]
-        cout += calc_cout_chemin(chem, d_costs, u_costs, C)
+        if t != Any[]
+            chem = [t[i][1] for i in 1:length(t)]
+            cout += calc_cout_chemin(chem, d_costs, u_costs, C)
+        end
     end
     return cout
 end
