@@ -1,7 +1,7 @@
 using Clustering
 
 
-rejet = 500 # si coût sous traitance inférieurs : on sous traite
+rejet = 650000 # si coût sous traitance inférieurs : on sous traite
 # ça a l'air d'etre la meilleur valeur après quelques tests
 # à voir si on s'amuse à le faire en détail
 
@@ -119,7 +119,7 @@ function premier_soustraitement(Z, d_costs, u_costs, M, Q_max)
 end
 
 
-function split_cluster(G)
+function split_cluster_obsolette(G)
     G2 = []
     for g in G
         if length(g) > 4
@@ -133,6 +133,21 @@ function split_cluster(G)
         else
             push!(G2, g)
         end
+    end
+    return G2
+end
+
+function split_cluster(G)
+    #fonction générale si jamais les clusters sont de grande taille (>12)
+    taille_clusters = 4
+    G2 = []
+    for g in G
+        n = 1
+        while n+taille_clusters <= length(g)
+            push!(G2, g[n:n+taille_clusters-1])
+            n+=taille_clusters
+        end
+        push!(G2, g[n:length(g)])
     end
     return G2
 end

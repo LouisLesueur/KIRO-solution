@@ -153,6 +153,7 @@ function remplissage(g, ordre, new_M, Q)
 			charge += new_M[i]
 		else
 			push!(T, [])
+            charge = new_M[i]
 		end
         if new_M[i] != 0
             push!(T[length(T)], (g[i], new_M[i]))
@@ -184,7 +185,8 @@ function tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
        end
        push!(new_M, m)
    end
-   # ensuite on regroupe de la façon la plus opti = le moins de camion possible, parcourant la plus petite distance possible (QUESTION : selon le remplissage du coup pas sûr que le calcul préalable de l’ordre opti soit intéressant à effectuer)
+   # ensuite on regroupe de la façon la plus opti = le moins de camion possible, parcourant la plus petite distance possible
+   # (QUESTION : selon le remplissage du coup pas sûr que le calcul préalable de l’ordre opti soit intéressant à effectuer)
    # les groupes étant de 4 on peut faire une fonction qui fait le remplissage « correct » prenant en argument l’ordre de passage :
    ordre = collect(permutations(1:length(g)))
    T_min = remplissage(g, ordre[1], new_M, Q)
@@ -215,4 +217,102 @@ function tournee_opti(G, M, C, Q_max, H, d_costs, u_costs)
         end
     end
     return l_tournees
+end
+
+#############
+function rejet_tournees_2(G, M, C, Q_max, H, d_costs, u_costs, s_trt)
+    # idem que la première version, mais en essayant de rejeter 1 par 1 les fournisseurs du cluster
+    # Les clusters de taille 1 sont sous-traité ; on testera ensuite s'il est plus interessant de les sous traiter ou d'en faire des clusters de taille 1
+    l_tournees = []
+    choix_list_G_2 = []
+    l_rejet = []
+
+    i_actu = 1
+    # pour mettre le bon numéro de groupe
+
+    for (i,g) in enumerate(G)
+        if length(g)==1
+            push!(l_rejet,g[1])
+            continue
+        end
+
+        cout_init = 0
+        l_tournees_g = []
+
+        for s in 1:H
+            tourn = tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
+            if tourn != [[]]
+                push!(l_tournees_g, [s, i_actu, tourn])
+            end
+            cout_init += calc_cout_tournees(tourn, d_costs, u_costs, C)
+        end
+
+        changement = true
+
+        while length(g)>1 && changement
+            changement = false
+            for k in 1:length(g)
+
+                new_g = [g[ind] for ind in 1:length(g) if ind != k]
+                new_cout = 0
+                new_l_tournees_g = []
+
+                for s in 1:H
+                    tourn = tournee_opti_gs(new_g, s, d_costs, u_costs, M, C, Q)
+                    if tourn != [[]]
+                        push!(new_l_tournees_g, [s, i_actu, tourn])
+                    end
+                    new_cout += calc_cout_tournees(tourn, d_costs, u_costs, C)
+                end
+                new_cout += s_trt[ g[k] ]
+
+                if new_cout<cout_init
+                    push!(l_rejet, g[k])
+                    cout_init = new_cout
+                    l_tournees_g = new_l_tournees_g
+                    g = new_g
+                    changement = true
+                    break
+                end
+            end
+        end
+
+        if length(g)==1
+            push!(l_rejet,g[1])
+            continue
+        end
+
+        l_tournees = vcat(l_tournees, l_tournees_g)
+        push!(choix_list_G_2,g)
+        i_actu += 1
+
+    end
+    return l_tournees, choix_list_G_2, l_rejet
+end
+
+function st_to_cluster(l_st, G, M, C, Q_max, H, d_costs, u_costs, s_trt)
+    # essaie de faire des cluster de 1 avec les sous-traités
+    i_actu = length(G) + 1
+    l_tournees_enplus = []
+    l_st_actu = []
+    for i_fournisseur in l_st
+        g = [i_fournisseur]
+        test_tourn = []
+        cout_cluster = 0
+        for s in 1:H
+            tourn = tournee_opti_gs(g, s, d_costs, u_costs, M, C, Q)
+            if tourn != [[]]
+                push!(test_tourn, [s, i_actu, tourn])
+            end
+            cout_cluster += calc_cout_tournees(tourn, d_costs, u_costs, C)
+        end
+        if cout_cluster < s_trt[i_fournisseur]
+            push!(G,g)
+            l_tournees_enplus = vcat(l_tournees_enplus, test_tourn)
+            i_actu += 1
+        else
+            push!(l_st_actu, i_fournisseur)
+        end
+    end
+    return(G, l_tournees_enplus, l_st_actu)
 end
