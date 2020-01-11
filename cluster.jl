@@ -2,6 +2,7 @@ using Clustering
 
 
 rejet = 650000 # si coût sous traitance inférieurs : on sous traite
+# 10000000 sans rejet2 et la reclusterisation
 # ça a l'air d'etre la meilleur valeur après quelques tests
 # à voir si on s'amuse à le faire en détail
 
