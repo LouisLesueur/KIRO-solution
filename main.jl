@@ -67,6 +67,58 @@ print(choix_l_st)
 create_output_file("solution2_try.txt", choix_l_st, list_tournees_2, choix_list_G_2)
 print("donne \n")
 print(calc_cout(choix_l_st, list_tournees_2))
-#[1,5,7], # choix_l_st
-#[[1, 1, [[(2, 3), (3, 5)], [(2,4)]]], [2, 1, [[(3, 1), (2, 4)]]],[1, 2, [[(4, 5), (6, 1), (8, 10)]]], [2, 2, [[(8, 2), (6,10), (4,9)]]]],
-#                   [[2,3],[4,6,8]]
+
+
+# heuristique
+# on a choix_l_st, choix_liste_G_2
+cout_act = calc_cout(choix_l_st, list_tournees_2)
+
+function heuristique(choix_list_G_2, choix_l_st, cout_act)
+    for i in 1:5
+        modif_g1 = rand(1:length(choix_list_G_2))
+        modif_g2 = rand(1:length(choix_list_G_2))
+        modif_f1 = rand(1:length(choix_list_G_2[modif_g1]))
+        modif_f2 = rand(1:length(choix_list_G_2[modif_g2]))
+
+        new_liste_G = choix_list_G_2
+        new_liste_G[modif_g1][modif_f1] = choix_list_G_2[modif_g2][modif_f2]
+        new_liste_G[modif_g2][modif_f2] = choix_list_G_2[modif_g1][modif_f1]
+
+        nom_unique = rejet_tournees_2(new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
+        list_tournees = nom_unique[1]
+        new_liste_G = nom_unique[2]
+        for k in nom_unique[3]
+            if !(k in choix_l_st)
+                push!(choix_l_st, k)
+            end
+        end
+
+        list_tournees_2, new_liste_G_2, l_rejet_enplus = rejet_tournees(list_tournees, new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
+
+        for k in l_rejet_enplus
+            if !(k in choix_l_st)
+                push!(choix_l_st,k)
+            end
+        end
+
+        nom_unique_2 = st_to_cluster(choix_l_st, new_liste_G_2, M, C, Q, H, d_costs, u_costs, s_trt)
+        new_liste_G_2 = nom_unique_2[1]
+        list_tournees_2 = vcat(list_tournees_2,nom_unique_2[2])
+        choix_l_st = nom_unique_2[3]
+        cout = calc_cout(choix_l_st, list_tournees_2)
+        print("\n cout : ")
+        print(cout)
+        print("\n")
+        if cout < cout_act
+            cout_act = cout
+            choix_liste_G_2 = new_liste_G_2
+            create_output_file("solution2_try3.txt", choix_l_st, list_tournees_2, new_liste_G_2)
+        end
+        print('\n')
+        print(cout_act)
+    end
+
+    return cout_act
+end
+
+heuristique(choix_list_G_2, choix_l_st, cout_act)
