@@ -75,27 +75,23 @@ print(calc_cout(choix_l_st, list_tournees_2))
 # on a choix_l_st, choix_liste_G_2
 cout_act = calc_cout(choix_l_st, list_tournees_2)
 
-function heuristique(choix_list_G_2, choix_l_st, cout_act)
-    for i in 1:3
-        modif_g1 = rand(1:length(choix_list_G_2))
-        modif_g2 = rand(1:length(choix_list_G_2))
-        modif_f1 = rand(1:length(choix_list_G_2[modif_g1]))
-        modif_f2 = rand(1:length(choix_list_G_2[modif_g2]))
-        modif_g3 = rand(1:length(choix_list_G_2))
-        modif_g4 = rand(1:length(choix_list_G_2))
-        modif_f3 = rand(1:length(choix_list_G_2[modif_g3]))
-        modif_f4 = rand(1:length(choix_list_G_2[modif_g4]))
+function heuristique(choix_list_G_2, choix_l_st, cout_act, tourn_init)
+    G_init = deepcopy(choix_list_G_2)
+    for i in 1:1
+        modif_g1 = rand(1:length(G_init))
+        modif_g2 = rand(1:length(G_init))
+        modif_f1 = rand(1:length(G_init[modif_g1]))
+        modif_f2 = rand(1:length(G_init[modif_g2]))
 
         new_liste_G = []
-        for g in choix_list_G_2 # pour être sûre que deepcopy
+        for g in G_init # pour être sûre que deepcopy
             push!(new_liste_G, deepcopy(g))
         end
-        new_liste_G[modif_g1][modif_f1] = choix_list_G_2[modif_g2][modif_f2]
-        new_liste_G[modif_g2][modif_f2] = choix_list_G_2[modif_g1][modif_f1]
-        new_liste_G[modif_g3][modif_f3] = choix_list_G_2[modif_g4][modif_f4]
-        new_liste_G[modif_g4][modif_f4] = choix_list_G_2[modif_g3][modif_f3]
+        new_liste_G[modif_g1][modif_f1] = G_init[modif_g2][modif_f2]
+        new_liste_G[modif_g2][modif_f2] = G_init[modif_g1][modif_f1]
 
-        nom_unique = rejet_tournees_2(new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
+        nom_unique_h = rejet_tournees_2(new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
+        """
         list_tournees = nom_unique[1]
         new_liste_G = nom_unique[2]
         for k in nom_unique[3]
@@ -103,39 +99,66 @@ function heuristique(choix_list_G_2, choix_l_st, cout_act)
                 push!(choix_l_st, k)
             end
         end
+        """
+        list_tournees_h = nom_unique_h[1]
+        new_liste_G = nom_unique_h[2]
+        choix_l_st_h = vcat(deepcopy(choix_l_st),nom_unique_h[3])
 
-        list_tournees_2, new_liste_G_2, l_rejet_enplus = rejet_tournees(list_tournees, new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
+        list_tournees_2_h, new_liste_G_2, l_rejet_enplus_h = rejet_tournees(list_tournees_h, new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
 
+        """
         for k in l_rejet_enplus
-            if !(k in choix_l_st)
-                push!(choix_l_st,k)
+            if !(k in choix_l_st_h)
+                push!(choix_l_st_h,k)
             end
         end
+        """
 
-        nom_unique_2 = st_to_cluster(choix_l_st, new_liste_G_2, M, C, Q, H, d_costs, u_costs, s_trt)
-        new_liste_G_2 = nom_unique_2[1]
-        list_tournees_2 = vcat(list_tournees_2,nom_unique_2[2])
-        choix_l_st = nom_unique_2[3]
-        cout = calc_cout(choix_l_st, list_tournees_2)
-        print("\n cout : ")
-        print(cout)
-        print("\n")
+        for k in l_rejet_enplus_h
+            push!(choix_l_st_h,k)
+        end
+
+        nom_unique_2_h = st_to_cluster(choix_l_st_h, new_liste_G_2, M, C, Q, H, d_costs, u_costs, s_trt)
+
+        new_liste_G_2 = nom_unique_2_h[1]
+        list_tournees_2_h = vcat(list_tournees_2_h,nom_unique_2_h[2])
+        choix_l_st_h = nom_unique_2_h[3]
+
+        cout = calc_cout(choix_l_st_h, list_tournees_2_h)
         if cout < cout_act
-            print("\n solution meilleure")
+            print("\n solution meilleure : ", cout)
             cout_act = cout
-            choix_liste_G_2 = []
+            G_init = []
             for g in new_liste_G_2
-                push!(choix_liste_G_2, deepcopy(g))
+                push!(G_init, deepcopy(g))
             end
-            create_output_file("solution2_try3.txt", choix_l_st, list_tournees_2, new_liste_G_2)
+            create_output_file("solution2_try3.txt", choix_l_st_h, list_tournees_2_h, new_liste_G_2)
+            res = []
+            for g in new_liste_G_2 # pour être sûre que deepcopy
+                push!(res, deepcopy(g))
+            end
+            return [res,cout_act]
         end
-        print('\n')
-        print(cout_act)
     end
-    return cout_act
+    return [G_init,cout_act]
 end
 
-for i in 1:50
-    print("\n ensuite")
-    heuristique(choix_list_G_2, choix_l_st, cout_act)
+function vrai_heuristique(n,cout_init,choix_list_G_2, choix_l_st, list_tournees_2)
+    cout_actu = cout_init
+    VARIABLE = heuristique(choix_list_G_2, choix_l_st, cout_actu, list_tournees_2)
+    temp = VARIABLE[1]
+    cout = VARIABLE[2]
+    if cout < cout_actu
+        cout_actu = cout
+    end
+    for i in 1:n
+        VARIABLE = heuristique(temp, choix_l_st, cout_actu, list_tournees_2)
+        temp = VARIABLE[1]
+        cout = VARIABLE[2]
+        if cout < cout_actu
+            cout_actu = cout
+        end
+    end
 end
+
+vrai_heuristique(1000,cout_act,choix_list_G_2, choix_l_st, list_tournees_2)
