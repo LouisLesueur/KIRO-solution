@@ -16,6 +16,8 @@ choix_l_st = choix[2]
 list_tournees = Tournees_gen(choix_list_G, M, C, Q, H, d_costs, u_costs)
 """
 
+"""
+# AVEC K_MEANS
 # lorsqu'on fait avec k_means : rien n'est sous traité en premier lieu
 choix_l_st, Z = premier_soustraitement(Z, d_costs, u_costs, M, Q)
 print("premier sous traitement ok \n")
@@ -27,7 +29,7 @@ choix_list_G = split_cluster(choix)
 print("split cluster ok \n")
 # on définit les tournées opti pour les groupes ainsi constitués
 # on vérifie s'il n'y a rien de plus intéressant à sous traiter (ptêt d'abord faire un premier tri pour réduire temps de calcul : on sous traite si cout_st < sum(charge_sem/13 * cout_ar))
-
+"""
 
 choix = clustering(Z, d_coord)
 choix_list_G = choix[1]

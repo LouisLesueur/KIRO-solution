@@ -6,7 +6,7 @@ rejet = 650000 # si coût sous traitance inférieurs : on sous traite
 # ça a l'air d'etre la meilleur valeur après quelques tests
 # à voir si on s'amuse à le faire en détail
 
-function sous_traitement(Z)
+function sous_traitement(Z; choix_rejet = rejet)
   # fonction qui permet de choisir quel fournisseur sous traiter ou non (dépend de la valeur de rejet)
   # input : Z (coordonnées et coût sous traitance des fournisseurs)
   # output : l_st : liste des fournisseurs à sous traiter
@@ -14,7 +14,7 @@ function sous_traitement(Z)
   l_st = []
   Z_C = []
   for i in 1:length(Z)
-    if Z[i][3] < rejet
+    if Z[i][3] < choix_rejet
         push!(l_st, i)
     else
         push!(Z_C, (i, Z[i]))
@@ -49,22 +49,23 @@ function min_dist_ind(el,Z,a_traiter)
     return min_j
 end
 
-function clustering(Z, D_coord)
+function clustering(Z, D_coord; choix_rejet = rejet)
     # fonction qui établit les clusters initiaux
     # input : Z (liste des fournisseurs), D_coord (coord du dépôt)
     # output : list_G (liste des clusters), l_st (liste des sous traités)
-    l_st, Z_C = sous_traitement(Z) # on regarde lesquels sous traiter
+    l_st, Z_C = sous_traitement(Z, choix_rejet) # on regarde lesquels sous traiter
     a_traiter = [true for i in 1:length(Z)]
     list_G = []
     for i in l_st # pas besoin de mettre dans cluster si st
         a_traiter[i] = false
     end
-    while sum(a_traiter) >= 4 # on fait des groupes de 4
+    taille_clusters = 4
+    while sum(a_traiter) >= taille_clusters # on fait des groupes de 4
         # ESSAYER AVEC D'AUTRES HYPOTHESES (3 PUIS ON RAJOUTE)
         premier_f = min_dist_ind(D_coord, Z, a_traiter) # le plus proche du dépôt
         G = [premier_f] # initialisation tournée
         a_traiter[premier_f] = false
-        for k in 1:3 # on rajoute les trois plus proches
+        for k in 1:taille_clusters-1 # on rajoute les trois plus proches
             f_min = min_dist_ind(Z[G[k]],Z, a_traiter)
             a_traiter[f_min] = false
             push!(G, f_min)
@@ -81,7 +82,8 @@ function clustering(Z, D_coord)
 end
 
 function clustering_kmeans(Z)
-    nb_clusters = 100
+    #nb_clusters = 20
+    nb_clusters = length(Z)÷4
     Z_sans_st = [ [ elt[1], elt[2] ] for elt in Z]
     Z_sans_st = hcat(Z_sans_st...)
     #print(Z_sans_st)
