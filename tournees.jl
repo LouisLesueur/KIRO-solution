@@ -107,10 +107,14 @@ function rejet_tournees(l_tournees, choix_list_G, M, C, Q_max, H, d_costs, u_cos
     for (i,G) in enumerate(choix_list_G)
 
         l_tournees_G = find_tournees_groupe(i,l_tournees)
-
         c = 0
+        """
         for tournee in l_tournees_G
             c += calc_cout_chemin(G,d_costs,u_costs,C)
+        end
+        """
+        for tournee in l_tournees_G
+            c += calc_cout_tournees(tournee[3],d_costs,u_costs,C)
         end
 
         # bon indice pour s_trt ?
