@@ -76,8 +76,11 @@ print(calc_cout(choix_l_st, list_tournees_2))
 cout_act = calc_cout(choix_l_st, list_tournees_2)
 
 function heuristique(choix_list_G_2, choix_l_st, cout_act, tourn_init)
-    G_init = deepcopy(choix_list_G_2)
-    for i in 1:1
+    G_init = []
+    for g in choix_list_G_2 # pour être sûre que deepcopy
+        push!(G_init, deepcopy(g))
+    end
+    #for i in 1:1
         modif_g1 = rand(1:length(G_init))
         modif_g2 = rand(1:length(G_init))
         modif_f1 = rand(1:length(G_init[modif_g1]))
@@ -137,10 +140,10 @@ function heuristique(choix_list_G_2, choix_l_st, cout_act, tourn_init)
             for g in new_liste_G_2 # pour être sûre que deepcopy
                 push!(res, deepcopy(g))
             end
-            return [res,cout_act]
+            return [res,cout_act,choix_l_st_h]
         end
-    end
-    return [G_init,cout_act]
+    #end
+    return [G_init,cout_act, choix_l_st]
 end
 
 function vrai_heuristique(n,cout_init,choix_list_G_2, choix_l_st, list_tournees_2)
@@ -148,13 +151,15 @@ function vrai_heuristique(n,cout_init,choix_list_G_2, choix_l_st, list_tournees_
     VARIABLE = heuristique(choix_list_G_2, choix_l_st, cout_actu, list_tournees_2)
     temp = VARIABLE[1]
     cout = VARIABLE[2]
+    temp2 = VARIABLE[3]
     if cout < cout_actu
         cout_actu = cout
     end
     for i in 1:n
-        VARIABLE = heuristique(temp, choix_l_st, cout_actu, list_tournees_2)
+        VARIABLE = heuristique(temp, temp2, cout_actu, list_tournees_2)
         temp = VARIABLE[1]
         cout = VARIABLE[2]
+        temp2 = VARIABLE[3]
         if cout < cout_actu
             cout_actu = cout
         end
