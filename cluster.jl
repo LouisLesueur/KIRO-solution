@@ -53,7 +53,7 @@ function clustering(Z, D_coord; choix_rejet = rejet)
     # fonction qui établit les clusters initiaux
     # input : Z (liste des fournisseurs), D_coord (coord du dépôt)
     # output : list_G (liste des clusters), l_st (liste des sous traités)
-    l_st, Z_C = sous_traitement(Z, choix_rejet) # on regarde lesquels sous traiter
+    l_st, Z_C = sous_traitement(Z, choix_rejet = choix_rejet) # on regarde lesquels sous traiter
     a_traiter = [true for i in 1:length(Z)]
     list_G = []
     for i in l_st # pas besoin de mettre dans cluster si st

@@ -76,18 +76,24 @@ print(calc_cout(choix_l_st, list_tournees_2))
 cout_act = calc_cout(choix_l_st, list_tournees_2)
 
 function heuristique(choix_list_G_2, choix_l_st, cout_act)
-    for i in 1:1
+    for i in 1:3
         modif_g1 = rand(1:length(choix_list_G_2))
         modif_g2 = rand(1:length(choix_list_G_2))
         modif_f1 = rand(1:length(choix_list_G_2[modif_g1]))
         modif_f2 = rand(1:length(choix_list_G_2[modif_g2]))
+        modif_g3 = rand(1:length(choix_list_G_2))
+        modif_g4 = rand(1:length(choix_list_G_2))
+        modif_f3 = rand(1:length(choix_list_G_2[modif_g3]))
+        modif_f4 = rand(1:length(choix_list_G_2[modif_g4]))
 
         new_liste_G = []
         for g in choix_list_G_2 # pour être sûre que deepcopy
-            push!(new_liste_G, g)
+            push!(new_liste_G, deepcopy(g))
         end
         new_liste_G[modif_g1][modif_f1] = choix_list_G_2[modif_g2][modif_f2]
         new_liste_G[modif_g2][modif_f2] = choix_list_G_2[modif_g1][modif_f1]
+        new_liste_G[modif_g3][modif_f3] = choix_list_G_2[modif_g4][modif_f4]
+        new_liste_G[modif_g4][modif_f4] = choix_list_G_2[modif_g3][modif_f3]
 
         nom_unique = rejet_tournees_2(new_liste_G, M, C, Q, H, d_costs, u_costs, s_trt)
         list_tournees = nom_unique[1]
@@ -114,16 +120,22 @@ function heuristique(choix_list_G_2, choix_l_st, cout_act)
         print("\n cout : ")
         print(cout)
         print("\n")
-        #if cout < cout_act
-        cout_act = cout
-        choix_liste_G_2 = new_liste_G_2
-        create_output_file("solution2_try3.txt", choix_l_st, list_tournees_2, new_liste_G_2)
-        #end
+        if cout < cout_act
+            print("\n solution meilleure")
+            cout_act = cout
+            choix_liste_G_2 = []
+            for g in new_liste_G_2
+                push!(choix_liste_G_2, deepcopy(g))
+            end
+            create_output_file("solution2_try3.txt", choix_l_st, list_tournees_2, new_liste_G_2)
+        end
         print('\n')
         print(cout_act)
     end
-
     return cout_act
 end
 
-heuristique(choix_list_G_2, choix_l_st, cout_act)
+for i in 1:50
+    print("\n ensuite")
+    heuristique(choix_list_G_2, choix_l_st, cout_act)
+end
